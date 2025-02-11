@@ -1,0 +1,48 @@
+
+import numpy as np
+import math
+ 
+
+    
+bonus=0.6 #基础设施建造速度加成
+extra_bonus=0.3 #造民工的额外建造速度加成
+maxspeed=75#无加成的满工厂单地建造速度上限
+voa=6000#基建建造量
+vob=10800#民工建造量
+voc=0.2#每级基建建设后的建造速度增加倍率
+
+def base(st,ed):
+    st=int(st)
+    ed=int(ed)
+    if st != ed:
+        return base(st+1,ed)+math.ceil(voa/(voc*st+1)/maxspeed/(1+bonus))
+    if st == ed:
+        return 0
+        
+def TD(st,ed,T):
+    return base(st,ed)+math.ceil(vob*T/(voc*ed+1)/maxspeed/(1+bonus+extra_bonus))
+    
+def count(st,ed,T):
+    x=1
+    countonlyst=0
+    countst2ed=0
+    while x<=25:
+        countonlyst+=T+1-min(T,TD(st,st,x))
+        countst2ed+=T+1-min(T,TD(st,ed,x))
+        #print(x,countonlyst,countst2ed,min(T,TD(st,st,x)),min(T,TD(st,ed,x)))
+        if countst2ed>countonlyst:
+            return x
+        x=x+1
+    return -1
+
+def countmatrix(T):
+    a=np.zeros((6,6))
+    i=0
+    j=0
+    for i in range(6):
+        for j in range(i,6):
+            a[i][j]=count(i,j,T)
+    print(a)
+
+#count(3,5,1200)
+countmatrix(1800)
